@@ -14,8 +14,11 @@ $queueName = 'abcdef';
 // instantiate redis connector
 $connector = new \Ulv\SimplestQueue\RedisConnector($redis, $queueName);
 
+// instantiate serializer (optional)
+$serializer = new \Ulv\SimplestQueue\Serializer\DTOSerializer();
+
 // instantiate queue
-$queue = new \Ulv\SimplestQueue\Queue($connector);
+$queue = new \Ulv\SimplestQueue\Queue($connector, $serializer);
 
 // instantiate simple DTO
 $dto = new \Ulv\SimplestQueue\SimplestDto(['a' => 1, 'b' => 2]);

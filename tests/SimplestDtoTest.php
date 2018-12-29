@@ -39,6 +39,7 @@ class SimplestDtoTest extends \PHPUnit\Framework\TestCase
         return [
             [['a' => 1, 'b' => 2, 'c' => 'abcdef', [1, 2]]],
             [[4, 'a' => 'zzzz', new \stdClass()]],
+            [[new \stdClass(), 'a' => 'zzzz', new \stdClass()]],
         ];
     }
 
@@ -62,7 +63,16 @@ class SimplestDtoTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(3, $sut['a']);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testSetInvalid()
+    {
+        $sut = new SimplestDto();
+        $sut[['a']] = 3;
+    }
+
+    public function testSetInvalid2()
     {
         $this->expectException(\InvalidArgumentException::class);
         $sut = new SimplestDto($this->testData);

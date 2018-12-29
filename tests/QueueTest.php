@@ -48,10 +48,11 @@ class QueueTest extends \PHPUnit\Framework\TestCase
 
     public function testPop()
     {
-        $dto = new SimplestDto(['a' => 1, 'b' => 2]);
+        $data = ['a' => 1, 'b' => 2];
+        $dto = new SimplestDto($data);
         $connector = m::mock(ConnectorInterface::class)
             ->shouldReceive('pop')
-            ->andReturn(serialize($dto))
+            ->andReturn(json_encode($data))
             ->once()
             ->getMock();
 
@@ -68,6 +69,6 @@ class QueueTest extends \PHPUnit\Framework\TestCase
             ->getMock();
 
         $sut = new Queue($connector);
-        $this->assertFalse($sut->pop());
+        $this->assertEquals(0,$sut->pop()->count());
     }
 }
