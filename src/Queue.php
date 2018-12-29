@@ -1,6 +1,8 @@
 <?php
 
 namespace Ulv\SimplestQueue;
+use Ulv\SimplestQueue\Serializer\DTOSerializer;
+use Ulv\SimplestQueue\Serializer\SerializerInterface;
 
 
 /**
@@ -15,12 +17,19 @@ class Queue implements QueueInterface
     protected $connector;
 
     /**
+     * @var SerializerInterface
+     */
+    protected $serializer;
+
+    /**
      * Queue constructor.
      * @param ConnectorInterface $connector
+     * @param SerializerInterface $serializer
      */
-    public function __construct(ConnectorInterface $connector)
+    public function __construct(ConnectorInterface $connector, SerializerInterface $serializer = null)
     {
         $this->connector = $connector;
+        $this->serializer = $serializer ?: new DTOSerializer();
     }
 
     /**
@@ -28,11 +37,11 @@ class Queue implements QueueInterface
      */
     public function push($dto)
     {
-        if (!($dto instanceof \Serializable)) {
-            throw new \InvalidArgumentException(__METHOD__.' passed object *must* implement \Serializable interface!');
+        if (!($dto instanceof \ArrayAccess)) {
+            throw new \InvalidArgumentException(__METHOD__.' passed object *must* implement \ArrayAccess interface!');
         }
 
-        return $this->connector->push(serialize($dto));
+        return $this->connector->push($this->serializer->serialize($dto));
     }
 
     /**
@@ -40,6 +49,11 @@ class Queue implements QueueInterface
      */
     public function pop()
     {
-        return unserialize($this->connector->pop());
+        try {
+            return $this->serializer->unserialize($this->connector->pop());
+        } catch (\Exception $e) {
+            // special case
+            return new SimplestDto();
+        }
     }
 }

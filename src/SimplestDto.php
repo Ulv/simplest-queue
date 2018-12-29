@@ -7,7 +7,7 @@ namespace Ulv\SimplestQueue;
  * Data transfer object. Just a simple container.
  * @package Ulv\SimplestQueue
  */
-class SimplestDto implements \ArrayAccess,\Serializable
+class SimplestDto implements \ArrayAccess, \Countable, Dumpable
 {
     /**
      * Internal storage
@@ -80,20 +80,13 @@ class SimplestDto implements \ArrayAccess,\Serializable
     /**
      * @inheritDoc
      */
-    public function serialize()
+    public function count()
     {
-        return json_encode($this->data);
+        return count($this->data);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function unserialize($serialized)
+    public function dump()
     {
-        if (!($data = json_decode($serialized, true))) {
-            throw new \InvalidArgumentException(__METHOD__.' invalid object passed!');
-        }
-
-        $this->init($data);
+        return $this->data;
     }
 }
